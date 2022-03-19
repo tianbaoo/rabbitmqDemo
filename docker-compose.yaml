@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+  rabbitmq:
+    # 镜像  这个版本可以到docker-hub去获取自己想要的版本
+    image: rabbitmq:3.9.13-management
+    # 容器名
+    container_name: rabbitmq
+    # 是否支持重启
+    restart: always
+    hostname: rabbitmq
+    ports:
+      - 15672:15672  # web UI管理接口
+      - 5672:5672  # 生产者和消费者连接使用的接口
+    privileged: true #给数据卷赋权限 避免启动出现Permission denied
+    # 容器卷
+    volumes:
+      - /etc/localtime:/etc/localtime:ro # 设置容器时区与宿主机保持一致
+      - ./rabbitmq/data:/var/lib/rabbitmq # 挂载 RabbitMQ数据
+      - ./rabbitmq/config/rabbitmq.sh:/etc/rabbitmq/rabbitmq.sh
+    # 环境配置
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest  # 账号
+      - RABBITMQ_DEFAULT_PASS=guest  # 密码
+      - RABBITMQ_ERLANG_COOKIE=hellocookie
